@@ -64,7 +64,7 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
+// System memory utilization
 float LinuxParser::MemoryUtilization() { 
   float mem_total;
   float mem_free;
@@ -74,9 +74,7 @@ float LinuxParser::MemoryUtilization() {
   std::ifstream filestream(kProcDirectory + kMeminfoFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
-      //std::replace(line.begin(), line.end(), ' ', '_');
-      //std::replace(line.begin(), line.end(), '=', ' ');
-      std::replace(line.begin(), line.end(), ':', ' ');
+        std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
         if (key == "MemTotal") {
@@ -91,7 +89,7 @@ float LinuxParser::MemoryUtilization() {
   return mem_total - mem_free;
 }
   
-// TODO: Read and return the system uptime
+// System uptime
 long LinuxParser::UpTime() {
   string uptime_s, idle_time_s;
   long uptime;
@@ -108,7 +106,7 @@ long LinuxParser::UpTime() {
   return uptime;
  }
 
-// TODO: Read and return the number of jiffies for the system
+//number of jiffies for the system
 long LinuxParser::Jiffies() { 
   vector<string> tokens;
   string line;
@@ -130,8 +128,6 @@ long LinuxParser::Jiffies() {
 return jiffies;
 }
 
-// TODO: Read and return the number of active jiffies for a PID
-
 long LinuxParser::ActiveJiffies(int pid) { 
   string pid_ = to_string(pid);
   vector<string> tokens;
@@ -150,7 +146,6 @@ long LinuxParser::ActiveJiffies(int pid) {
 return active_jiffies;
  }
 
-// TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() { 
   //all the other jiffies except idle and iowait
   vector<string> tokens;
@@ -175,9 +170,8 @@ long LinuxParser::ActiveJiffies() {
 return active_jiffies;
 }
 
-// TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() {
-  // idle and iowait (4 and 5) double check!
+  // idle and iowait (4 and 5) 
   vector<string> tokens;
   string line;
   string s;
@@ -195,21 +189,17 @@ long LinuxParser::IdleJiffies() {
 return idle_jiffies;
 }
 
-// TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() {
-//active/total
-//store all the jiffies
-vector <string> cpu;
-string total_jiffies = to_string(Jiffies());
-string active_jiffies = to_string(ActiveJiffies());
-string idle_jiffies = to_string(IdleJiffies());
-cpu.push_back(total_jiffies);
-cpu.push_back(active_jiffies);
-cpu.push_back(idle_jiffies);    
-return cpu;
+  vector <string> cpu;
+  string total_jiffies = to_string(Jiffies());
+  string active_jiffies = to_string(ActiveJiffies());
+  string idle_jiffies = to_string(IdleJiffies());
+  cpu.push_back(total_jiffies);
+  cpu.push_back(active_jiffies);
+  cpu.push_back(idle_jiffies);    
+  return cpu;
 }
 
-// TODO: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
   int total_processes;
   string line;
@@ -282,7 +272,6 @@ string LinuxParser::Ram(int pid) {
   return ram;
  }
 
-// TODO: Read and return the user ID associated with a process
 string LinuxParser::Uid(int pid) { 
   string pid_ = to_string(pid);
   string line;
@@ -308,7 +297,6 @@ string LinuxParser::Uid(int pid) {
   return uid;
 }
 
-// TODO: Read and return the user associated with a process
 string LinuxParser::User(int pid) { 
   string user;
   string uid = LinuxParser::Uid(pid);
@@ -332,7 +320,6 @@ string LinuxParser::User(int pid) {
   return user;
 }
 
-// TODO: Read and return the uptime of a process
 long LinuxParser::UpTime(int pid) {
   vector<string> tokens;
   long uptime;
