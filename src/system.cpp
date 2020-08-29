@@ -16,7 +16,7 @@ using std::vector;
 
 using namespace LinuxParser;
 
-// TODO: Return the system's CPU
+// Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
 vector<Process>& System::Processes() { 

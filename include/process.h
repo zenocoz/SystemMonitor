@@ -18,11 +18,8 @@ class Process {
   Process(int pid) : pid_(pid) {} 
 
  private:
- int pid_;
- float cpu_utilization;
- //CHECK
-
-
+  int pid_;
+  float cpu_utilization;
 };
 
 #endif

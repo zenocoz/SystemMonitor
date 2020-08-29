@@ -108,24 +108,7 @@ long LinuxParser::UpTime() {
 
 //number of jiffies for the system
 long LinuxParser::Jiffies() { 
-  vector<string> tokens;
-  string line;
-  string s;
-  long jiffies = 0;
-  std::ifstream filestream (kProcDirectory + kStatFilename);
-  if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-    while (linestream >> s) {
-      tokens.push_back(s);
-    }
-    tokens.erase(tokens.begin());
-    for (auto i : tokens) {
-      long num = std::stol(i);
-      jiffies += num;
-    }
-  }
-return jiffies;
+	return ActiveJiffies() + IdleJiffies();
 }
 
 long LinuxParser::ActiveJiffies(int pid) { 
@@ -148,57 +131,39 @@ return active_jiffies;
 
 long LinuxParser::ActiveJiffies() { 
   //all the other jiffies except idle and iowait
-  vector<string> tokens;
-  string line;
-  string s;
-  long active_jiffies = 0;
-  std::ifstream filestream (kProcDirectory + kStatFilename);
-  if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-    while (linestream >> s) {
-      tokens.push_back(s);
-    }
-    tokens.erase(tokens.begin()+4);
-    tokens.erase(tokens.begin()+5);
-    tokens.erase(tokens.begin());
-    for (auto i : tokens) {
-      long num = std::stol(i);
-      active_jiffies += num;
-    }
-  }
-return active_jiffies;
+    vector<string> cpu_states = CpuUtilization();
+  long active_jiffies = stol(cpu_states[0]) + stol(cpu_states[1]) +
+   stol(cpu_states[2]) + stol(cpu_states[5]) + stol(cpu_states[6]) + 
+   stol(cpu_states[7]);
+  return active_jiffies;
+
 }
 
 long LinuxParser::IdleJiffies() {
-  // idle and iowait (4 and 5) 
-  vector<string> tokens;
-  string line;
-  string s;
-  long idle_jiffies = 0;
-  long jiffies = 0;
-  std::ifstream filestream (kProcDirectory + kStatFilename);
-  if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-    while (linestream >> s) {
-      tokens.push_back(s);
-    }
-    idle_jiffies = std::stol(tokens[4]) + std::stol(tokens[5]);
-  }
-return idle_jiffies;
+  // idle and iowait (positions 3 and 4) 
+  vector<string> cpu_states = CpuUtilization();
+  long idle_jiffies = stol(cpu_states[3]) + stol(cpu_states[4]);
+  return idle_jiffies;
 }
 
 vector<string> LinuxParser::CpuUtilization() {
-  vector <string> cpu;
-  string total_jiffies = to_string(Jiffies());
-  string active_jiffies = to_string(ActiveJiffies());
-  string idle_jiffies = to_string(IdleJiffies());
-  cpu.push_back(total_jiffies);
-  cpu.push_back(active_jiffies);
-  cpu.push_back(idle_jiffies);    
+  vector<string> cpu;
+  string line;
+  string value;
+  std::ifstream filestream (kProcDirectory + kStatFilename);
+  if (filestream.is_open()) {
+    getline(filestream,line);
+      std::istringstream linestream(line);
+      while(linestream >> value) {
+        int counter = 0;
+        if (value != "cpu" && counter <7) {
+          cpu.push_back(value);
+          counter++;
+        }
+      }
+  }
   return cpu;
-}
+  }
 
 int LinuxParser::TotalProcesses() {
   int total_processes;
